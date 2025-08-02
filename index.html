@@ -19,6 +19,7 @@
       <h2>Isi Data Diri</h2>
       <input type="text" id="user-name" placeholder="Nama Lengkap">
       <input type="text" id="user-absen" placeholder="Nomor Absen">
+      <input type="text" id="user-kelas" placeholder="Kelas">
       <button id="start-btn">Mulai Sekarang</button>
     </div>
 
@@ -44,12 +45,11 @@
       <p>Benar: <span id="correct-count"></span></p>
       <p>Salah: <span id="wrong-count"></span></p>
       <p id="score-text"></p>
-      <h3>🏆 Leaderboard</h3>
+      <h3>🏆 Leaderboard Kelas <span id="class-display"></span></h3>
       <ul id="leaderboard-list"></ul>
     </div>
   </div>
 
-  <!-- Firebase SDK (Modular v12) -->
   <script type="module" src="script.js"></script>
 </body>
 </html>
