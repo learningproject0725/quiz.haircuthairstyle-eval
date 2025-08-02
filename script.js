@@ -1,12 +1,14 @@
 // script.js
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import { getDatabase, ref, push, set, query, orderByChild, limitToLast, get } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
-
+// Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDNUme5dcYQi6pKR3gpdRUp1wHxQSiP2q4",
   authDomain: "quiz-evaluasi-hairstyle.firebaseapp.com",
+  databaseURL: "https://quiz-evaluasi-hairstyle-default-rtdb.firebaseio.com",
   projectId: "quiz-evaluasi-hairstyle",
   storageBucket: "quiz-evaluasi-hairstyle.appspot.com",
   messagingSenderId: "892621648220",
@@ -14,7 +16,9 @@ const firebaseConfig = {
   measurementId: "G-WT3C7QDT5N"
 };
 
+// Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 const db = getDatabase(app);
 
 
@@ -222,45 +226,39 @@ const questions = [
 ];
 
 
-
-// Variabel global
+// Variabel kuis
 let currentQuestion = 0;
 let selectedAnswers = Array(questions.length).fill(null);
 let timeLeft = 20 * 60;
 let timer;
-
-let userName = "", userAbsen = "";
+let userName = "", userAbsen = "", userKelas = "";
 
 // DOM
 const startScreen = document.getElementById("start-screen");
 const formScreen = document.getElementById("user-form");
 const quizScreen = document.getElementById("quiz-screen");
 const resultScreen = document.getElementById("result-screen");
-
-const questionText = document.getElementById("question-text");
-const choices = document.getElementById("choices");
-const questionNav = document.getElementById("question-nav");
-const timerDisplay = document.getElementById("timer");
-
-const correctCount = document.getElementById("correct-count");
-const wrongCount = document.getElementById("wrong-count");
-const scoreText = document.getElementById("score-text");
 const leaderboardList = document.getElementById("leaderboard-list");
+const classDisplay = document.getElementById("class-display");
 
+// Tombol Mulai Kuis
 document.getElementById("open-form-btn").onclick = () => {
   startScreen.style.display = "none";
   formScreen.style.display = "block";
 };
 
+// Tombol Mulai Sekarang
 document.getElementById("start-btn").onclick = () => {
   const name = document.getElementById("user-name").value.trim();
   const absen = document.getElementById("user-absen").value.trim();
-  if (!name || !absen) {
+  const kelas = document.getElementById("user-kelas").value.trim();
+  if (!name || !absen || !kelas) {
     alert("Isi semua data!");
     return;
   }
   userName = name;
   userAbsen = absen;
+  userKelas = kelas;
   formScreen.style.display = "none";
   quizScreen.style.display = "block";
   showQuestion();
@@ -268,6 +266,7 @@ document.getElementById("start-btn").onclick = () => {
   timer = setInterval(updateTimer, 1000);
 };
 
+// Timer
 function updateTimer() {
   if (timeLeft <= 0) {
     clearInterval(timer);
@@ -276,17 +275,18 @@ function updateTimer() {
   }
   let m = Math.floor(timeLeft / 60);
   let s = timeLeft % 60;
-  timerDisplay.textContent = `Waktu: ${m}:${s < 10 ? "0" : ""}${s}`;
+  document.getElementById("timer").textContent = `Waktu: ${m}:${s < 10 ? "0" : ""}${s}`;
   timeLeft--;
 }
 
+// Tampilkan soal
 function showQuestion() {
-  let q = questions[currentQuestion];
-  questionText.textContent = `${currentQuestion + 1}. ${q.question}`;
+  const q = questions[currentQuestion];
+  document.getElementById("question-text").textContent = `${currentQuestion + 1}. ${q.question}`;
+  const choices = document.getElementById("choices");
   choices.innerHTML = "";
-
   q.choices.forEach((c, i) => {
-    let btn = document.createElement("button");
+    const btn = document.createElement("button");
     btn.textContent = c;
     if (selectedAnswers[currentQuestion] === i) btn.classList.add("selected");
     btn.onclick = () => {
@@ -298,10 +298,12 @@ function showQuestion() {
   });
 }
 
+// Navigasi soal
 function updateNav() {
-  questionNav.innerHTML = "";
+  const nav = document.getElementById("question-nav");
+  nav.innerHTML = "";
   questions.forEach((_, i) => {
-    let btn = document.createElement("button");
+    const btn = document.createElement("button");
     btn.textContent = i + 1;
     btn.className = "question-btn";
     if (i === currentQuestion) btn.classList.add("active");
@@ -311,10 +313,11 @@ function updateNav() {
       showQuestion();
       updateNav();
     };
-    questionNav.appendChild(btn);
+    nav.appendChild(btn);
   });
 }
 
+// Tombol selanjutnya
 document.getElementById("next-btn").onclick = () => {
   if (currentQuestion < questions.length - 1) {
     currentQuestion++;
@@ -331,6 +334,7 @@ document.getElementById("next-btn").onclick = () => {
   }
 };
 
+// Tombol sebelumnya
 document.getElementById("prev-btn").onclick = () => {
   if (currentQuestion > 0) {
     currentQuestion--;
@@ -339,33 +343,65 @@ document.getElementById("prev-btn").onclick = () => {
   }
 };
 
+// Tampilkan hasil
 function showResult() {
   quizScreen.style.display = "none";
   resultScreen.style.display = "block";
 
-  let correct = selectedAnswers.reduce((acc, ans, i) => acc + (ans === questions[i].answer ? 1 : 0), 0);
-  let wrong = questions.length - correct;
-  let score = Math.round((correct / questions.length) * 100);
+  const correct = selectedAnswers.filter((a, i) => a === questions[i].answer).length;
+  const wrong = questions.length - correct;
+  const score = Math.round((correct / questions.length) * 100);
 
-  correctCount.textContent = correct;
-  wrongCount.textContent = wrong;
-
+  document.getElementById("correct-count").textContent = correct;
+  document.getElementById("wrong-count").textContent = wrong;
+  const scoreText = document.getElementById("score-text");
   scoreText.textContent = `Nilai: ${score}%`;
-  scoreText.className = score >= 70 ? 'green' : score >= 60 ? 'yellow' : 'red';
+  scoreText.className = score >= 70 ? "green" : score >= 60 ? "yellow" : "red";
 
-  const entry = { name: userName, absen: userAbsen, score: score, timestamp: Date.now() };
-  push(ref(db, 'leaderboard'), entry);
+  classDisplay.textContent = userKelas;
 
-  const qRef = query(ref(db, 'leaderboard'), orderByChild('score'), limitToLast(10));
-  get(qRef).then(snapshot => {
-    const list = [];
-    snapshot.forEach(child => list.push(child.val()));
-    list.reverse();
+  const path = `leaderboard/${userKelas}/${userName}`;
+  const entry = {
+    name: userName,
+    absen: userAbsen,
+    kelas: userKelas,
+    score: score,
+    timestamp: Date.now()
+  };
+  set(ref(db, path), entry).then(() => loadLeaderboard(userKelas));
+}
+
+// ✅ Fungsi yang diperbaiki untuk memuat leaderboard
+function loadLeaderboard(kelas) {
+  const leaderboardRef = ref(db, `leaderboard/${kelas}`);
+  get(leaderboardRef).then(snapshot => {
+    if (!snapshot.exists()) {
+      leaderboardList.innerHTML = "<li>Belum ada data untuk kelas ini.</li>";
+      return;
+    }
+
+    const latestEntries = {};
+
+    snapshot.forEach(child => {
+      const data = child.val();
+      const name = data.name;
+      // Simpan hanya entri terbaru per nama
+      if (!latestEntries[name] || data.timestamp > latestEntries[name].timestamp) {
+        latestEntries[name] = data;
+      }
+    });
+
+    // Ubah jadi array dan sort
+    const sortedEntries = Object.values(latestEntries).sort((a, b) => b.score - a.score);
+
     leaderboardList.innerHTML = "";
-    list.forEach((e, i) => {
+    sortedEntries.forEach((entry, index) => {
       const li = document.createElement("li");
-      li.textContent = `${i + 1}. ${e.name} (Absen: ${e.absen}) - ${e.score}%`;
+      li.textContent = `${index + 1}. ${entry.name} (Absen: ${entry.absen}) - ${entry.score}%`;
       leaderboardList.appendChild(li);
     });
+  }).catch(error => {
+    console.error("Gagal memuat leaderboard:", error);
+    leaderboardList.innerHTML = "<li>Gagal memuat leaderboard.</li>";
   });
 }
