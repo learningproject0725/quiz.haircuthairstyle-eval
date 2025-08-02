@@ -225,7 +225,7 @@ const questions = [
 
 // Variabel kuis
 let currentQuestion = 0;
-let selectedAnswers = Array(questions.length).fill(null);
+let selectedAnswers = Array(20).fill(null);
 let timeLeft = 20 * 60;
 let timer;
 let userName = "", userAbsen = "", userKelas = "";
@@ -272,14 +272,14 @@ function updateTimer() {
   }
   let m = Math.floor(timeLeft / 60);
   let s = timeLeft % 60;
-  document.getElementById("timer").textContent = Waktu: ${m}:${s < 10 ? "0" : ""}${s};
+  document.getElementById("timer").textContent = `Waktu: ${m}:${s < 10 ? "0" : ""}${s}`;
   timeLeft--;
 }
 
 // Tampilkan soal
 function showQuestion() {
   const q = questions[currentQuestion];
-  document.getElementById("question-text").textContent = ${currentQuestion + 1}. ${q.question};
+  document.getElementById("question-text").textContent = `${currentQuestion + 1}. ${q.question}`;
   const choices = document.getElementById("choices");
   choices.innerHTML = "";
   q.choices.forEach((c, i) => {
@@ -314,7 +314,7 @@ function updateNav() {
   });
 }
 
-// Tombol selanjutnya
+// Tombol Selanjutnya
 document.getElementById("next-btn").onclick = () => {
   if (currentQuestion < questions.length - 1) {
     currentQuestion++;
@@ -331,7 +331,7 @@ document.getElementById("next-btn").onclick = () => {
   }
 };
 
-// Tombol sebelumnya
+// Tombol Sebelumnya
 document.getElementById("prev-btn").onclick = () => {
   if (currentQuestion > 0) {
     currentQuestion--;
@@ -352,12 +352,12 @@ function showResult() {
   document.getElementById("correct-count").textContent = correct;
   document.getElementById("wrong-count").textContent = wrong;
   const scoreText = document.getElementById("score-text");
-  scoreText.textContent = Nilai: ${score}%;
+  scoreText.textContent = `Nilai: ${score}%`;
   scoreText.className = score >= 70 ? "green" : score >= 60 ? "yellow" : "red";
 
   classDisplay.textContent = userKelas;
 
-  const path = leaderboard/${userKelas}/${userName};
+  const path = `leaderboard/${userKelas}/${userName}`;
   const entry = {
     name: userName,
     absen: userAbsen,
@@ -368,9 +368,9 @@ function showResult() {
   set(ref(db, path), entry).then(() => loadLeaderboard(userKelas));
 }
 
-// ✅ Fungsi yang diperbaiki untuk memuat leaderboard
+// Load leaderboard terbaru
 function loadLeaderboard(kelas) {
-  const leaderboardRef = ref(db, leaderboard/${kelas});
+  const leaderboardRef = ref(db, `leaderboard/${kelas}`);
   get(leaderboardRef).then(snapshot => {
     if (!snapshot.exists()) {
       leaderboardList.innerHTML = "<li>Belum ada data untuk kelas ini.</li>";
@@ -378,23 +378,19 @@ function loadLeaderboard(kelas) {
     }
 
     const latestEntries = {};
-
     snapshot.forEach(child => {
       const data = child.val();
       const name = data.name;
-      // Simpan hanya entri terbaru per nama
       if (!latestEntries[name] || data.timestamp > latestEntries[name].timestamp) {
         latestEntries[name] = data;
       }
     });
 
-    // Ubah jadi array dan sort
     const sortedEntries = Object.values(latestEntries).sort((a, b) => b.score - a.score);
-
     leaderboardList.innerHTML = "";
     sortedEntries.forEach((entry, index) => {
       const li = document.createElement("li");
-      li.textContent = ${index + 1}. ${entry.name} (Absen: ${entry.absen}) - ${entry.score}%;
+      li.textContent = `${index + 1}. ${entry.name} (Absen: ${entry.absen}) - ${entry.score}%`;
       leaderboardList.appendChild(li);
     });
   }).catch(error => {
@@ -402,7 +398,7 @@ function loadLeaderboard(kelas) {
     leaderboardList.innerHTML = "<li>Gagal memuat leaderboard.</li>";
   });
 }
-    }
   }
 }
+
 
