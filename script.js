@@ -5,11 +5,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// Firebase config
+// Konfigurasi Firebase BARU
 const firebaseConfig = {
   apiKey: "AIzaSyD4HdKtqVVuS9cDnq9_oHWBmtlzJrjfmuo",
   authDomain: "quizhaircuthairstyle-eval.firebaseapp.com",
-  databaseURL: "https://quizhaircuthairstyle-eval-default-rtdb.asia-southeast1.firebasedatabase.app",
+  databaseURL: "https://quizhaircuthairstyle-eval-default-rtdb.asia-southeast1.firebasedatabase.app", // ✅ PENTING: Tambahkan ini!
   projectId: "quizhaircuthairstyle-eval",
   storageBucket: "quizhaircuthairstyle-eval.appspot.com",
   messagingSenderId: "823860497628",
@@ -17,10 +17,10 @@ const firebaseConfig = {
   measurementId: "G-8HRBN2766M"
 };
 
-// Initialize Firebase
+// Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const db = getDatabase(app);
+const db = getDatabase(app); // 
 
 const questions = [
   {
@@ -227,16 +227,11 @@ const questions = [
 
 
 // Variabel kuis
-// Ambil data user dari localStorage jika ada
-let userName = localStorage.getItem("quizUserName") || "";
-let userAbsen = localStorage.getItem("quizUserAbsen") || "";
-let userKelas = localStorage.getItem("quizUserKelas") || "";
-
-// Variabel kuis
 let currentQuestion = 0;
 let selectedAnswers = Array(questions.length).fill(null);
 let timeLeft = 20 * 60;
 let timer;
+let userName = "", userAbsen = "", userKelas = "";
 
 // DOM
 const startScreen = document.getElementById("start-screen");
@@ -246,31 +241,24 @@ const resultScreen = document.getElementById("result-screen");
 const leaderboardList = document.getElementById("leaderboard-list");
 const classDisplay = document.getElementById("class-display");
 
-// Tombol mulai
+// Tombol Mulai Kuis
 document.getElementById("open-form-btn").onclick = () => {
   startScreen.style.display = "none";
   formScreen.style.display = "block";
 };
 
+// Tombol Mulai Sekarang
 document.getElementById("start-btn").onclick = () => {
   const name = document.getElementById("user-name").value.trim();
   const absen = document.getElementById("user-absen").value.trim();
   const kelas = document.getElementById("user-kelas").value.trim();
-
   if (!name || !absen || !kelas) {
     alert("Isi semua data!");
     return;
   }
-
   userName = name;
   userAbsen = absen;
   userKelas = kelas;
-
-  // Simpan ke localStorage
-  localStorage.setItem("quizUserName", userName);
-  localStorage.setItem("quizUserAbsen", userAbsen);
-  localStorage.setItem("quizUserKelas", userKelas);
-
   formScreen.style.display = "none";
   quizScreen.style.display = "block";
   showQuestion();
@@ -287,14 +275,14 @@ function updateTimer() {
   }
   let m = Math.floor(timeLeft / 60);
   let s = timeLeft % 60;
-  document.getElementById("timer").textContent = `Waktu: ${m}:${s < 10 ? "0" : ""}${s}`;
+  document.getElementById("timer").textContent = Waktu: ${m}:${s < 10 ? "0" : ""}${s};
   timeLeft--;
 }
 
 // Tampilkan soal
 function showQuestion() {
   const q = questions[currentQuestion];
-  document.getElementById("question-text").textContent = `${currentQuestion + 1}. ${q.question}`;
+  document.getElementById("question-text").textContent = ${currentQuestion + 1}. ${q.question};
   const choices = document.getElementById("choices");
   choices.innerHTML = "";
   q.choices.forEach((c, i) => {
@@ -329,7 +317,7 @@ function updateNav() {
   });
 }
 
-// Navigasi tombol
+// Tombol selanjutnya
 document.getElementById("next-btn").onclick = () => {
   if (currentQuestion < questions.length - 1) {
     currentQuestion++;
@@ -346,6 +334,7 @@ document.getElementById("next-btn").onclick = () => {
   }
 };
 
+// Tombol sebelumnya
 document.getElementById("prev-btn").onclick = () => {
   if (currentQuestion > 0) {
     currentQuestion--;
@@ -366,12 +355,12 @@ function showResult() {
   document.getElementById("correct-count").textContent = correct;
   document.getElementById("wrong-count").textContent = wrong;
   const scoreText = document.getElementById("score-text");
-  scoreText.textContent = `Nilai: ${score}%`;
+  scoreText.textContent = Nilai: ${score}%;
   scoreText.className = score >= 70 ? "green" : score >= 60 ? "yellow" : "red";
 
   classDisplay.textContent = userKelas;
 
-  const path = `leaderboard/${userKelas}/${userName}`;
+  const path = leaderboard/${userKelas}/${userName};
   const entry = {
     name: userName,
     absen: userAbsen,
@@ -379,20 +368,12 @@ function showResult() {
     score: score,
     timestamp: Date.now()
   };
-
-  set(ref(db, path), entry).then(() => {
-    loadLeaderboard(userKelas);
-
-    // Hapus dari localStorage agar data tidak menempel untuk user berikutnya
-    localStorage.removeItem("quizUserName");
-    localStorage.removeItem("quizUserAbsen");
-    localStorage.removeItem("quizUserKelas");
-  });
+  set(ref(db, path), entry).then(() => loadLeaderboard(userKelas));
 }
 
-// Load leaderboard
+// ✅ Fungsi yang diperbaiki untuk memuat leaderboard
 function loadLeaderboard(kelas) {
-  const leaderboardRef = ref(db, `leaderboard/${kelas}`);
+  const leaderboardRef = ref(db, leaderboard/${kelas});
   get(leaderboardRef).then(snapshot => {
     if (!snapshot.exists()) {
       leaderboardList.innerHTML = "<li>Belum ada data untuk kelas ini.</li>";
@@ -400,19 +381,23 @@ function loadLeaderboard(kelas) {
     }
 
     const latestEntries = {};
+
     snapshot.forEach(child => {
       const data = child.val();
       const name = data.name;
+      // Simpan hanya entri terbaru per nama
       if (!latestEntries[name] || data.timestamp > latestEntries[name].timestamp) {
         latestEntries[name] = data;
       }
     });
 
+    // Ubah jadi array dan sort
     const sortedEntries = Object.values(latestEntries).sort((a, b) => b.score - a.score);
+
     leaderboardList.innerHTML = "";
     sortedEntries.forEach((entry, index) => {
       const li = document.createElement("li");
-      li.textContent = `${index + 1}. ${entry.name} (Absen: ${entry.absen}) - ${entry.score}%`;
+      li.textContent = ${index + 1}. ${entry.name} (Absen: ${entry.absen}) - ${entry.score}%;
       leaderboardList.appendChild(li);
     });
   }).catch(error => {
@@ -421,3 +406,18 @@ function loadLeaderboard(kelas) {
   });
 }
 
+
+
+dan ini rule di realtimedatabase firebase saya:
+
+{
+  "rules": {
+    "leaderboard": {
+      ".read": true,
+      ".write": true,
+      "$kelas": {
+        ".indexOn": ["score"]
+      }
+    }
+  }
+}
