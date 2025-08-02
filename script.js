@@ -1,23 +1,26 @@
+// script.js
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// Konfigurasi Firebase Baru
+// Konfigurasi Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyD4HdKtqVVuS9cDnq9_oHWBmtlzJrjfmuo",
-  authDomain: "quizhaircuthairstyle-eval.firebaseapp.com",
-  databaseURL: "https://quizhaircuthairstyle-eval-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "quizhaircuthairstyle-eval",
-  storageBucket: "quizhaircuthairstyle-eval.appspot.com",
-  messagingSenderId: "823860497628",
-  appId: "1:823860497628:web:adcd141b29579496b8b819",
-  measurementId: "G-8HRBN2766M"
+  apiKey: "AIzaSyDNUme5dcYQi6pKR3gpdRUp1wHxQSiP2q4",
+  authDomain: "quiz-evaluasi-hairstyle.firebaseapp.com",
+  databaseURL: "https://quiz-evaluasi-hairstyle-default-rtdb.firebaseio.com",
+  projectId: "quiz-evaluasi-hairstyle",
+  storageBucket: "quiz-evaluasi-hairstyle.appspot.com",
+  messagingSenderId: "892621648220",
+  appId: "1:892621648220:web:fa83dcec7dc25f4d595199",
+  measurementId: "G-WT3C7QDT5N"
 };
 
 // Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getDatabase(app);
+
 
 const questions = [
   {
@@ -225,7 +228,7 @@ const questions = [
 
 // Variabel kuis
 let currentQuestion = 0;
-let selectedAnswers = Array(20).fill(null);
+let selectedAnswers = Array(questions.length).fill(null);
 let timeLeft = 20 * 60;
 let timer;
 let userName = "", userAbsen = "", userKelas = "";
@@ -314,7 +317,7 @@ function updateNav() {
   });
 }
 
-// Tombol Selanjutnya
+// Tombol selanjutnya
 document.getElementById("next-btn").onclick = () => {
   if (currentQuestion < questions.length - 1) {
     currentQuestion++;
@@ -331,7 +334,7 @@ document.getElementById("next-btn").onclick = () => {
   }
 };
 
-// Tombol Sebelumnya
+// Tombol sebelumnya
 document.getElementById("prev-btn").onclick = () => {
   if (currentQuestion > 0) {
     currentQuestion--;
@@ -368,7 +371,7 @@ function showResult() {
   set(ref(db, path), entry).then(() => loadLeaderboard(userKelas));
 }
 
-// Load leaderboard terbaru
+// ✅ Fungsi yang diperbaiki untuk memuat leaderboard
 function loadLeaderboard(kelas) {
   const leaderboardRef = ref(db, `leaderboard/${kelas}`);
   get(leaderboardRef).then(snapshot => {
@@ -378,15 +381,19 @@ function loadLeaderboard(kelas) {
     }
 
     const latestEntries = {};
+
     snapshot.forEach(child => {
       const data = child.val();
       const name = data.name;
+      // Simpan hanya entri terbaru per nama
       if (!latestEntries[name] || data.timestamp > latestEntries[name].timestamp) {
         latestEntries[name] = data;
       }
     });
 
+    // Ubah jadi array dan sort
     const sortedEntries = Object.values(latestEntries).sort((a, b) => b.score - a.score);
+
     leaderboardList.innerHTML = "";
     sortedEntries.forEach((entry, index) => {
       const li = document.createElement("li");
@@ -398,7 +405,3 @@ function loadLeaderboard(kelas) {
     leaderboardList.innerHTML = "<li>Gagal memuat leaderboard.</li>";
   });
 }
-  }
-}
-
-
