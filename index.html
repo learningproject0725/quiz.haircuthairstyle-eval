@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuis Evaluasi Pemangkasan</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="quiz-container">
+    <!-- Start Screen -->
+    <div id="start-screen" class="window-box">
+      <h1>Kuis Evaluasi Pemangkasan</h1>
+      <p>Ada 20 soal pilihan ganda. Isi data terlebih dahulu sebelum mulai.</p>
+      <button id="open-form-btn">Mulai Kuis</button>
+    </div>
+
+    <!-- Form User -->
+    <div id="user-form" class="window-box" style="display: none;">
+      <h2>Isi Data Diri</h2>
+      <input type="text" id="user-name" placeholder="Nama Lengkap">
+      <input type="text" id="user-absen" placeholder="Nomor Absen">
+      <button id="start-btn">Mulai Sekarang</button>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="window-box" style="display: none;">
+      <div class="top-bar">
+        <div id="timer">Waktu: 20:00</div>
+        <div id="question-nav"></div>
+      </div>
+      <div id="question-box">
+        <h2 id="question-text"></h2>
+        <div id="choices"></div>
+        <div id="navigation-buttons">
+          <button id="prev-btn">Sebelumnya</button>
+          <button id="next-btn">Selanjutnya</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="window-box" style="display: none;">
+      <h2>Kuis Selesai!</h2>
+      <p>Benar: <span id="correct-count"></span></p>
+      <p>Salah: <span id="wrong-count"></span></p>
+      <p id="score-text"></p>
+      <h3>🏆 Leaderboard</h3>
+      <ul id="leaderboard-list"></ul>
+    </div>
+  </div>
+
+  <!-- Firebase SDK (Modular v12) -->
+  <script type="module" src="script.js"></script>
+</body>
+</html>

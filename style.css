@@ -1,0 +1,113 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f5f5fa;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.window-box {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  padding: 30px;
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #0077cc;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+button:hover {
+  background-color: #005fa3;
+}
+
+.top-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#timer {
+  font-weight: bold;
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+#question-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 0;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.question-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  border: none;
+  font-weight: bold;
+  background-color: #ccc;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.question-btn.active {
+  background-color: #0077cc;
+  color: white;
+}
+
+.question-btn.answered {
+  background-color: #4b90e2;
+  color: white;
+}
+
+#choices button {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  text-align: left;
+  background-color: #e0e0e0;
+  color: #000;
+  font-weight: bold;
+}
+
+#choices button.selected {
+  background-color: #4b90e2;
+  color: white;
+}
+
+#result-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#score-text {
+  font-size: 48px;
+  font-weight: 800;
+  margin-top: 20px;
+}
+
+.green { color: green; }
+.yellow { color: #d1a000; }
+.red { color: red; }
