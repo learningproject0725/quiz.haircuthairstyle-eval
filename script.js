@@ -1,15 +1,12 @@
-// script.js
-
-// Firebase SDK imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// Konfigurasi Firebase BARU
+// Konfigurasi Firebase Baru
 const firebaseConfig = {
   apiKey: "AIzaSyD4HdKtqVVuS9cDnq9_oHWBmtlzJrjfmuo",
   authDomain: "quizhaircuthairstyle-eval.firebaseapp.com",
-  databaseURL: "https://quizhaircuthairstyle-eval-default-rtdb.asia-southeast1.firebasedatabase.app", // ✅ PENTING: Tambahkan ini!
+  databaseURL: "https://quizhaircuthairstyle-eval-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "quizhaircuthairstyle-eval",
   storageBucket: "quizhaircuthairstyle-eval.appspot.com",
   messagingSenderId: "823860497628",
@@ -20,7 +17,7 @@ const firebaseConfig = {
 // Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const db = getDatabase(app); // 
+const db = getDatabase(app);
 
 const questions = [
   {
@@ -405,19 +402,7 @@ function loadLeaderboard(kelas) {
     leaderboardList.innerHTML = "<li>Gagal memuat leaderboard.</li>";
   });
 }
-
-
-
-dan ini rule di realtimedatabase firebase saya:
-
-{
-  "rules": {
-    "leaderboard": {
-      ".read": true,
-      ".write": true,
-      "$kelas": {
-        ".indexOn": ["score"]
-      }
     }
   }
 }
+
