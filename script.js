@@ -1,26 +1,26 @@
 // script.js
 
+// Firebase SDK imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// Konfigurasi Firebase
+// Konfigurasi Firebase BARU
 const firebaseConfig = {
-  apiKey: "AIzaSyDNUme5dcYQi6pKR3gpdRUp1wHxQSiP2q4",
-  authDomain: "quiz-evaluasi-hairstyle.firebaseapp.com",
-  databaseURL: "https://quiz-evaluasi-hairstyle-default-rtdb.firebaseio.com",
-  projectId: "quiz-evaluasi-hairstyle",
-  storageBucket: "quiz-evaluasi-hairstyle.appspot.com",
-  messagingSenderId: "892621648220",
-  appId: "1:892621648220:web:fa83dcec7dc25f4d595199",
-  measurementId: "G-WT3C7QDT5N"
+  apiKey: "AIzaSyD4HdKtqVVuS9cDnq9_oHWBmtlzJrjfmuo",
+  authDomain: "quizhaircuthairstyle-eval.firebaseapp.com",
+  databaseURL: "https://quizhaircuthairstyle-eval-default-rtdb.asia-southeast1.firebasedatabase.app", // ✅ PENTING: Tambahkan ini!
+  projectId: "quizhaircuthairstyle-eval",
+  storageBucket: "quizhaircuthairstyle-eval.appspot.com",
+  messagingSenderId: "823860497628",
+  appId: "1:823860497628:web:adcd141b29579496b8b819",
+  measurementId: "G-8HRBN2766M"
 };
 
 // Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const db = getDatabase(app);
-
+const db = getDatabase(app); // 
 
 const questions = [
   {
@@ -405,3 +405,4 @@ function loadLeaderboard(kelas) {
     leaderboardList.innerHTML = "<li>Gagal memuat leaderboard.</li>";
   });
 }
+
