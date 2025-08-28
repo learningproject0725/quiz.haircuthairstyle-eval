@@ -24,206 +24,167 @@ const db = getDatabase(app);
 
 const questions = [
   {
-    question: "Definisi dari pemangkasan rambut menurut Milady, adalah …. ",
-    choices: [
-      "A. Proses pewarnaan rambut",
-      "B. Proses mengatur tatanan rambut",
-      "C. Proses memangkas, membentuk dan menipiskan rambut",
-      "D. Proses menyisir dan mengeringkan rambut"
-    ],
+    question: "Secara etimologi, kata 'pemangkasan' berasal dari kata 'pangkas' yang artinya ...",
+    choices: ["Sisir", "Potong", "Cuci", "Tata"],
+    answer: 1
+  },
+  {
+    question: "Tujuan pemangkasan rambut berikut ini yang TIDAK tepat adalah ....",
+    choices: ["Memperindah bentuk kepala", "Mempermudah pengaturan rambut", "Membuat rambut tumbuh lebih cepat", "Memberi kesan wajah oval"],
     answer: 2
   },
   {
-    question: "Tokoh yang mendefinisikan pemangkasan rambut sebagai seni yang harmonis dengan struktur wajah, yaitu ….",
-    choices: [
-      "A. Peter F. Saerang",
-      "B. Vidal Sassoon",
-      "C. Leo Passage",
-      "D. Milady"
-    ],
+    question: "Alat yang digunakan khusus untuk membagi rambut (parting) adalah ....",
+    choices: ["Gunting bilah lurus", "Sisir berekor (tail comb)", "Clipper", "Razor"],
     answer: 1
   },
   {
-    question: "Tujuan pemangkasan rambut tidak meliputi ….",
-    choices: [
-      "A. Memberi kesan wajah oval",
-      "B. Mengikuti tren",
-      "C. Menambah panjang rambut",
-      "D. Mempermudah pengaturan"
-    ],
+    question: "Sudut elevasi 0° digunakan pada teknik pemangkasan ....",
+    choices: ["Layer", "Graduasi", "Solid (Blunt Cut)", "Undercut"],
     answer: 2
   },
   {
-    question: "Titik tertinggi di kepala yang digunakan sebagai referensi pemangkasan, adalah ….",
-    choices: [
-      "A. Crown",
-      "B. Apex",
-      "C. Fringe",
-      "D. Nape"
-    ],
+    question: "Titik referensi (reference point) pada kepala yang merupakan titik tertinggi adalah ....",
+    choices: ["Crown", "Apex", "Nape", "Fringe"],
     answer: 1
   },
   {
-    question: "Alat yang digunakan untuk membagi rambut (parting), ialah ….",
-    choices: [
-      "A. Gunting bilah lurus",
-      "B. Razor",
-      "C. Sisir berekor",
-      "D. Sikat leher"
-    ],
+    question: "Kontra indikasi yang mengharuskan penata rambut menolak atau menunda layanan pemangkasan adalah ....",
+    choices: ["Rambut kusut", "Rambut berketombe", "Adanya luka terbuka di kulit kepala", "Rambut sangat kering"],
     answer: 2
   },
   {
-    question: "Sudut pengangkatan (elevasi) 0° pada pemangkasan rambut akan menghasilkan model pangkasan ….",
-    choices: [
-      "A. Layer",
-      "B. Graduasi",
-      "C. Solid",
-      "D. Bertumpuk"
-    ],
+    question: "Bentuk wajah yang dianggap ideal dan cocok untuk hampir semua model pangkasan adalah ....",
+    choices: ["Bulat (Round)", "Persegi (Square)", "Oval", "Segitiga (Heart)"],
     answer: 2
   },
   {
-    question: "Panduan pemangkasan yang bersifat tetap, disebut dengan ….",
-    choices: [
-      "A. Mobile guideline",
-      "B. Static guideline",
-      "C. Flexible line",
-      "D. Design section"
-    ],
+    question: "Teknik pengecekan hasil pangkasan dengan memeriksa dari arah yang berlawanan untuk memastikan keseragaman disebut ....",
+    choices: ["Sectioning", "Cross Check", "Design Line", "Texturizing"],
     answer: 1
   },
   {
-    question: "Postur tubuh yang baik saat memangkas rambut akan bermanfaat untuk ….",
-    choices: [
-      "A. Memperlambat kerja",
-      "B. Memicu nyeri punggung",
-      "C. Meningkatkan hasil pangkasan",
-      "D. Mempengaruhi desain pangkasan"
-    ],
+    question: "Neck duster adalah alat yang berfungsi untuk ....",
+    choices: ["Memotong rambut", "Menyisir rambut", "Membersihkan sisa potongan rambut di leher", "Menyimpan alat"],
     answer: 2
   },
   {
-    question: "Berikut yang termasuk kontra indikasi dari pemangkasan rambut, adalah ….",
-    choices: [
-      "A. Rambut berminyak",
-      "B. Luka di kulit kepala",
-      "C. Rambut kering",
-      "D. Ketombe"
-    ],
-    answer: 1
-  },
-  {
-    question: "Teknik finger wave termasuk dalam kategori penataan ….",
-    choices: [
-      "A. Dengan alat pemanas",
-      "B. Tanpa alat",
-      "C. Menggunakan chemical",
-      "D. Semi permanen"
-    ],
-    answer: 1
-  },
-  {
-    question: "Jika pelanggan memiliki wajah bulat, rekomendasi pangkasan yang tepat, adalah ….",
-    choices: [
-      "A. Blunt cut pendek",
-      "B. Layer panjang",
-      "C. Poni tumpul tebal",
-      "D. Graduasi pendek di samping"
-    ],
-    answer: 1
-  },
-  {
-    question: "Prosedur yang benar setelah menggunakan gunting, yaitu ….",
-    choices: [
-      "A. Disimpan langsung dalam laci",
-      "B. Dibersihkan dengan alkohol 70%",
-      "C. Dicuci dengan sabun biasa",
-      "D. Direndam dengan air panas"
-    ],
-    answer: 1
-  },
-  {
-    question: "Seorang penata rambut memilih elevasi 90° saat memangkas rambut. Model pangkasan yang akan dihasilkan, adalah ….",
-    choices: [
-      "A. Graduasi",
-      "B. Bob rata",
-      "C. Layer",
-      "D. Undercut"
-    ],
+    question: "Langkah pertama yang harus dilakukan sebelum memulai pemangkasan rambut adalah ....",
+    choices: ["Memangkas rambut", "Mencuci rambut", "Melakukan konsultasi dan analisis", "Menyeterilkan alat"],
     answer: 2
   },
   {
-    question: "Resiko dari cara memegang gunting yang tidak benar, adalah ….",
-    choices: [
-      "A. Pangkasan terlalu pendek",
-      "B. Nyeri sendi dan kerusakan tendon",
-      "C. Rambut jadi kaku",
-      "D. Warna rambut berubah"
-    ],
+    question: "Seorang pelanggan memiliki bentuk wajah bulat. Rekomendasi model pangkasan yang PALING tepat untuknya adalah ....",
+    choices: ["Blunt cut lurus dan berat di bagian bawah", "Poni tumpul tebal dan lurus", "Layer panjang yang menambah volume vertikal", "Pangkasan sangat pendek dan rata di samping"],
+    answer: 2
+  },
+  {
+    question: "Jika seorang pelanggan memiliki rambut dengan tekstur kasar dan densitas tebal, teknik pemangkasan yang perlu dihindari adalah ....",
+    choices: ["Layer untuk mengurangi volume", "Blunt cut yang menambah kesan berat", "Graduasi untuk menambah dimensi", "Texturizing dengan razor"],
     answer: 1
   },
   {
-    question: "Pelanggan dengan rambut keriting ingin pangkasan bob pendek. Faktor utama yang harus dipertimbangkan, adalah ….",
+    question: "Perawatan gunting yang benar setelah digunakan adalah ....",
+    choices: ["Disimpan begitu saja dalam laci", "Dibersihkan dengan kain dan diberi minyak pelumas khusus", "Dicuci dengan sabun dan air, lalu dikeringkan dengan lap", "Direndam dalam desinfektan semalaman"],
+    answer: 1
+  },
+  {
+    question: "Teknik penataan rambut 'Finger Wave' termasuk dalam kategori penataan ....",
+    choices: ["Dengan alat pemanas (thermal styling)", "Kimiawi (chemical styling)", "Tanpa alat (non-thermal styling)", "Semi permanen"],
+    answer: 2
+  },
+  {
+    question: "Pola pemangkasan mana yang menghasilkan rambut lebih panjang di depan dan lebih pendek di belakang, disebut dengan ....",
+    choices: ["Pola Datar", "Pola Naik", "Pola Turun", "Pola Lingkar"],
+    answer: 2
+  },
+  {
+    question: "Komponen desain yang menunjukkan kepanjangan rambut yang diukur dari kulit kepala sampai ujung rambut adalah ....",
+    choices: ["Bentuk (Shape)", "Tekstur", "Struktur", "Arah"],
+    answer: 2
+  },
+  {
+    question: "Tujuan utama dari memberikan saran pasca pelayanan kepada pelanggan adalah ....",
+    choices: ["Agar pelanggan membeli produk lebih banyak", "Untuk menjaga hasil pangkasan dan kesehatan rambut", "Supaya pelanggan cepat kembali ke salon", "Sebagai formalitas akhir layanan"],
+    answer: 1
+  },
+  {
+    question: "Dalam dokumentasi portofolio, foto 'before-after' sangat efektif karena dapat menampilkan ....",
+    choices: ["Harga layanan", "Transformasi dan keahlian penata rambut", "Lokasi salon", "Produk yang digunakan"],
+    answer: 1
+  },
+  {
+    question: "Platform media sosial yang paling cocok untuk menampilkan portofolio visual hasil karya tata rambut adalah ....",
+    choices: ["LinkedIn", "Facebook", "Instagram", "Twitter"],
+    answer: 2
+  },
+  {
+    question: "Strategi personal branding yang kurang baik untuk seorang penata rambut pemula adalah ....",
+    choices: ["Konsisten mengunggah karya terbaik", "Berinteraksi dengan pengikut di kolom komentar", "Mengunggah konten yang tidak jelas dan tidak terkait dengan keahliannya", "Menggunakan hashtag yang relevan"],
+    answer: 2
+  },
+  {
+    question: "Seorang pelanggan dengan wajah persegi dan rambut bertekstur halus serta densitas tipis datang ke salon. Analisis yang PALING tepat dan rekomendasi pangkasan untuknya adalah ....",
     choices: [
-      "A. Penyusutan rambut saat kering",
-      "B. Warna kulit pelanggan",
-      "C. Harga produk digunakan",
-      "D. Tren terbaru"
+      "Wajah persegi perlu dilembutkan, rambut halus dan tipis mudah lemas. Rekomendasi: Graduasi atau layer ringan untuk menambah volume dan melembutkan garis rahang.",
+      "Wajah persegi cocok dengan garis tegas. Rekomendasi: Blunt cut bob untuk menonjolkan gaya.",
+      "Rambut tipis harus dihindari pemotongan. Rekomendasi: Tidak dipotong.",
+      "Semua model pasti cocok. Rekomendasi: Mengikuti tren terbaru."
     ],
     answer: 0
   },
   {
-    question: "Jika menemukan pelanggan dengan rambut penuh dengan ketombe sebelum pemangkasan, tindakan yang tepat, yakni ….",
+    question: "Manfaat postur tubuh dan posisi kerja yang ergonomis sangat penting bagi seorang penata rambut, adalah ....",
+    choices: ["Agar terlihat profesional di depan pelanggan", "Untuk mencegah risiko cedera otot dan sendi jangka panjang", "Agar dapat memotong rambut dengan lebih cepat", "Suatu aturan baku dari salon"],
+    answer: 1
+  },
+  {
+    question: "Seorang penata rambut akan memangkas menggunakan teknik Uniform Layer (elevasi 90°). Namun, hasilnya tidak membulat sempurna dan terlihat tidak rata. Kesalahan apa yang paling mungkin terjadi, yaitu ....",
+    choices: ["Sudut elevasi tidak konsisten di setiap seksi", "Guide line pertama tidak ditentukan dengan benar", "Tidak melakukan cross check", "Semua jawaban di atas benar"],
+    answer: 3
+  },
+  {
+    question: "Strategi yang PALING efektif dalam membangun personal branding di Instagram, adalah ....",
+    choices: ["Membeli banyak followers agar terlihat populer", "Hanya mengunggah foto hasil akhir tanpa keterangan", "Konsisten mengunggah konten berkualitas, berinteraksi dengan followers, dan menggunakan hashtag yang relevan", "Mengunggah semua hasil karya tanpa proses seleksi"],
+    answer: 2
+  },
+  {
+    question: "Sebuah video time-lapse singkat yang menunjukkan proses pangkasan dari 'before' ke 'after' sangat efektif untuk diunggah di TikTok. Jenis konten video ini dikenal sebagai ....",
+    choices: ["A-Roll", "B-Roll", "Tutorial", "Vlog"],
+    answer: 1
+  },
+  {
+    question: "Jika seorang pelanggan menginginkan pangkasan pendek tapi takut terlihat terlalu maskulin, maka yang dilakukan seorang penata rambut adalah ....",
     choices: [
-      "A. Memangkas seperti biasa",
-      "B. Menolak layanan dan merujuk ke dokter",
-      "C. Menggunakan shampoo anti ketombe",
-      "D. Memangkas pada bagian yang tidak berketombe"
+      "Menolak keinginannya karena tidak mungkin",
+      "Merekomendasikan pangkasan yang lebih feminin seperti pixie cut dengan layer dan tekstur, serta menjelaskan kemungkinan hasilnya.",
+      "Langsung memotong sesuai keinginan tanpa konsultasi",
+      "Menyarankan untuk tidak memotong pendek sama sekali"
     ],
     answer: 1
   },
   {
-    question: "Kreasi penataan yang tepat untuk pemangkasan pixie cut, adalah ….",
-    choices: [
-      "A. Braid cut",
-      "B. Slick back dengan gel",
-      "C. Beach wave",
-      "D. Crimping"
-    ],
+    question: "Perhatikan pernyataan berikut: 'Rambut dipotong dengan elevasi 180°, dimana rambut bagian eksterior lebih panjang daripada interior'. Teknik pemangkasan yang dimaksud adalah ....",
+    choices: ["Solid Form", "Graduated Cut", "Uniform Layer", "Increase Layer"],
+    answer: 3
+  },
+  {
+    question: "Seorang penata rambut ingin menciptakan tampilan rambut yang sangat ringan, bertekstur, dan memiliki lapisan dengan pergerakan dinamis. Teknik pemangkasan yang sesuai dengan keinginan penata rambut tersebut, adalah ....",
+    choices: ["Solid form dengan menggunakan gunting biasa", "Graduasi diagonal belakang dengan menggunakan gunting biasa", "Layer dengan menggunakan gunting dan razor", "Graduasi diagonal depan dengan menggunakan razor"],
+    answer: 2
+  },
+  {
+    question: "Sebuah salon ingin meningkatkan penjualan layanan pewarnaan. Strategi portofolio digital seperti apa yang PALING efektif untuk mendukung tujuan tersebut, yaitu ....",
+    choices: ["Hanya memposting foto pangkasan hitam putih", "Memfokuskan konten pada video transformasi warna rambut yang dramatis dan menarik", "Hanya menampilkan harga promo dan potongan harga menarik", "Mengunggah foto suasana dalam salon disertai dengan peralatan canggih"],
     answer: 1
   },
   {
-    question: "Kelemahan portofolio yang hanya menampilkan foto hasil akhir tanpa penjelasan teknik, adalah ….",
-    choices: [
-      "A. Kurang menunjukkan proses berpikir kreatif",
-      "B. Warna foto terlalu cerah",
-      "C. Tidak mencantumkan harga jasa",
-      "D. Ukuran file terlalu besar"
-    ],
-    answer: 0
-  },
-  {
-    question: "Untuk pelanggan dengan ketebalan rambut tipis dan wajah persegi, rancangan pemangkasan yang paling tepat, adalah ….",
-    choices: [
-      "A. Blunt cut dengan layer di dagu",
-      "B. Graduated dengan volume di mahkota",
-      "C. Undercut dengan fade di samping",
-      "D. Asymetrical bob pendek"
-    ],
+    question: "Seorang penata rambut harus menolak melakukan pemangkasan karena menemukan kurap di kulit kepala pelanggan. Tindakan ini dilakukan berdasarkan pertimbangan ....",
+    choices: ["Estetika", "Kesehatan dan Keselamatan Kerja (K3)", "Tren", "Kebiasaan salon"],
     answer: 1
-  },
-  {
-    question: "Strategi pemasaran digital yang efektif dalam menampilkan portofolio pemangkasan kreatif, yaitu ….",
-    choices: [
-      "A. Instagram reels dengan hashtag #viral",
-      "B. Brosur cetak",
-      "C. Iklan koran",
-      "D. Spanduk jalanan"
-    ],
-    answer: 0
   }
 ];
+
 
 
 // Variabel kuis
@@ -405,3 +366,4 @@ function loadLeaderboard(kelas) {
     leaderboardList.innerHTML = "<li>Gagal memuat leaderboard.</li>";
   });
 }
+
