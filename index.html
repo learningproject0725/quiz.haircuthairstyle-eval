@@ -5,6 +5,31 @@
   <title>Kuis Evaluasi Pemangkasan</title>
   <link rel="stylesheet" href="style.css">
 </head>
+<!-- Tombol Admin -->
+<button id="admin-btn">Admin</button>
+
+<!-- Modal Login -->
+<div id="admin-login" class="modal-overlay">
+  <div class="modal-box">
+    <h2>Login Admin</h2>
+    <input type="text" id="admin-username" placeholder="Username">
+    <input type="password" id="admin-password" placeholder="Password">
+    <button id="login-btn">Login</button>
+    <button onclick="document.getElementById('admin-login').style.display='none'">Batal</button>
+  </div>
+</div>
+
+<!-- Modal Editor -->
+<div id="admin-editor" class="modal-overlay">
+  <div class="modal-box" style="max-width:700px;">
+    <h2>Editor Soal</h2>
+    <div id="editor-container"></div>
+    <button id="add-question-btn">+ Tambah Soal</button>
+    <button id="save-questions-btn">💾 Simpan</button>
+    <button onclick="document.getElementById('admin-editor').style.display='none'">Tutup</button>
+  </div>
+</div>
+
 <body>
   <div id="quiz-container">
     <!-- Start Screen -->
@@ -53,4 +78,5 @@
   <script type="module" src="script.js"></script>
 </body>
 </html>
+
 
