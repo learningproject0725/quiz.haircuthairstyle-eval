@@ -1,268 +1,330 @@
-// =============================
-// Firebase Setup
-// =============================
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+// script.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 import {
   getDatabase,
   ref,
-  get,
   set,
-  push,
+  get,
   update,
-  remove
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+  push
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// Konfigurasi Firebase
+// ✅ Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyA0jJq5ITmMSIDzc3jH0PRyRG6lWh7Np_4",
   authDomain: "quizhairstyle.firebaseapp.com",
-  databaseURL: "https://quizhairstyle-default-rtdb.firebaseio.com/", // HARUS sesuai dengan database kamu
+  databaseURL: "https://quiz-evaluasi-hairstyle-default-rtdb.firebaseio.com/",
   projectId: "quizhairstyle",
-  storageBucket: "quizhairstyle.appspot.com",
+  storageBucket: "quizhairstyle.firebasestorage.app",
   messagingSenderId: "889778092393",
   appId: "1:889778092393:web:831b46773c2aa593d0e5f8",
   measurementId: "G-EG2K9M8PM1"
 };
 
-// Init Firebase
+// ✅ Init Firebase
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 const db = getDatabase(app);
 
-// =============================
-// Variabel Global
-// =============================
+// =====================
+// Variabel Kuis
+// =====================
 let questions = [];
-let currentQuestionIndex = 0;
-let score = 0;
-let currentUser = null;
+let currentQuestion = 0;
+let selectedAnswers = [];
 let timer;
-let timeLeft = 30;
+let timeLeft = 20 * 60; // 20 menit
+let userName = "", userAbsen = "", userKelas = "";
 
-// =============================
-// Fungsi Admin & Editor Soal
-// =============================
+// =====================
+// DOM Elements
+// =====================
+const startScreen = document.getElementById("start-screen");
+const formScreen = document.getElementById("user-form");
+const quizScreen = document.getElementById("quiz-screen");
+const resultScreen = document.getElementById("result-screen");
+const leaderboardList = document.getElementById("leaderboard-list");
+const classDisplay = document.getElementById("class-display");
+
+// =====================
+// Admin Login
+// =====================
 const adminBtn = document.getElementById("admin-btn");
-const adminLoginModal = document.getElementById("admin-login");
-const adminEditorModal = document.getElementById("admin-editor");
-const loginBtn = document.getElementById("login-btn");
-const closeLogin = document.getElementById("close-login");
-const closeEditor = document.getElementById("close-editor");
-const saveQuestionBtn = document.getElementById("save-question-btn");
-const addQuestionBtn = document.getElementById("add-question-btn");
-const questionList = document.getElementById("question-list");
+const adminLogin = document.getElementById("admin-login");
+const adminEditor = document.getElementById("admin-editor");
 
-// Buka modal login admin
-adminBtn.addEventListener("click", () => {
-  adminLoginModal.style.display = "flex";
-});
+adminBtn.onclick = () => {
+  adminLogin.style.display = "flex";
+};
 
-// Tutup modal login
-closeLogin.addEventListener("click", () => {
-  adminLoginModal.style.display = "none";
-});
-
-// Tutup modal editor
-closeEditor.addEventListener("click", () => {
-  adminEditorModal.style.display = "none";
-});
-
-// Login admin
-loginBtn.addEventListener("click", () => {
+document.getElementById("login-btn").onclick = () => {
   const user = document.getElementById("admin-username").value;
   const pass = document.getElementById("admin-password").value;
 
-  if (user === "admin" && pass === "1234") {
-    adminLoginModal.style.display = "none";
-    adminEditorModal.style.display = "flex";
-    loadQuestions();
+  if (user === "admin" && pass === "23121989") {
+    adminLogin.style.display = "none";
+    adminEditor.style.display = "flex";
+    loadEditorQuestions();
   } else {
     alert("Username atau Password salah!");
   }
-});
+};
 
-// Tambah soal kosong
-addQuestionBtn.addEventListener("click", () => {
-  const newRef = push(ref(db, "questions"));
-  const newQuestion = {
-    text: "Pertanyaan baru",
-    options: ["A", "B", "C", "D"],
-    answer: 0
-  };
-  set(newRef, newQuestion);
-  loadQuestions();
-});
+// =====================
+// Admin Editor
+// =====================
+const editorContainer = document.getElementById("editor-container");
 
-// Simpan soal baru
-saveQuestionBtn.addEventListener("click", () => {
-  const qText = document.getElementById("question-text").value;
-  const opts = [
-    document.getElementById("option-a").value,
-    document.getElementById("option-b").value,
-    document.getElementById("option-c").value,
-    document.getElementById("option-d").value
-  ];
-  const ans = parseInt(document.getElementById("correct-answer").value);
-
-  if (!qText || opts.some(o => !o)) {
-    alert("Isi semua data soal!");
-    return;
-  }
-
-  const newRef = push(ref(db, "questions"));
-  set(newRef, {
-    text: qText,
-    options: opts,
-    answer: ans
-  }).then(() => {
-    alert("Soal berhasil ditambahkan!");
-    loadQuestions();
-  });
-});
-
-// Load semua soal
-function loadQuestions() {
+function loadEditorQuestions() {
   get(ref(db, "questions")).then(snapshot => {
-    questionList.innerHTML = "";
+    editorContainer.innerHTML = "";
     if (snapshot.exists()) {
-      const data = snapshot.val();
-      Object.keys(data).forEach(key => {
-        const q = data[key];
-        const li = document.createElement("li");
-        li.textContent = q.text;
-        questionList.appendChild(li);
-      });
+      questions = snapshot.val();
+      questions.forEach((q, i) => renderEditorQuestion(q, i));
     }
   });
 }
 
-// =============================
-// Fungsi Kuis
-// =============================
-const quizForm = document.getElementById("quiz-form");
-const quizContainer = document.getElementById("quiz-container");
-const questionContainer = document.getElementById("question-container");
-const timerDisplay = document.getElementById("timer");
-const leaderboardList = document.getElementById("leaderboard-list");
+function renderEditorQuestion(q, index) {
+  const div = document.createElement("div");
+  div.className = "editor-question";
+  div.innerHTML = `
+    <h4>Soal ${index + 1}</h4>
+    <input type="text" value="${q.question}" data-field="question" data-index="${index}" placeholder="Teks Soal">
+    ${q.choices.map((c, i) => `
+      <input type="text" value="${c}" data-field="choice" data-choice="${i}" data-index="${index}" placeholder="Pilihan ${i+1}">
+    `).join("")}
+    <input type="number" value="${q.answer}" data-field="answer" data-index="${index}" min="0" max="3" placeholder="Jawaban benar (0-3)">
+    <hr>
+  `;
+  editorContainer.appendChild(div);
+}
 
-// Submit form data peserta
-quizForm.addEventListener("submit", e => {
-  e.preventDefault();
-  const nama = document.getElementById("nama").value.trim();
-  const absen = document.getElementById("absen").value.trim();
-  const kelas = document.getElementById("kelas").value.trim();
+// Tambah Soal Baru
+document.getElementById("add-question-btn").onclick = () => {
+  const newQ = {
+    question: "Soal baru...",
+    choices: ["Pilihan 1", "Pilihan 2", "Pilihan 3", "Pilihan 4"],
+    answer: 0
+  };
+  questions.push(newQ);
+  renderEditorQuestion(newQ, questions.length - 1);
+};
 
-  if (!nama || !absen || !kelas) {
-    alert("Isi semua data peserta!");
+// Simpan ke Firebase
+document.getElementById("save-questions-btn").onclick = () => {
+  const inputs = editorContainer.querySelectorAll("input");
+  inputs.forEach(input => {
+    const idx = input.dataset.index;
+    if (input.dataset.field === "question") {
+      questions[idx].question = input.value;
+    } else if (input.dataset.field === "choice") {
+      const choiceIdx = input.dataset.choice;
+      questions[idx].choices[choiceIdx] = input.value;
+    } else if (input.dataset.field === "answer") {
+      questions[idx].answer = parseInt(input.value);
+    }
+  });
+
+  set(ref(db, "questions"), questions).then(() => {
+    alert("Soal berhasil disimpan!");
+  });
+};
+
+// =====================
+// User Flow
+// =====================
+
+// Tombol Mulai Kuis
+document.getElementById("open-form-btn").onclick = () => {
+  startScreen.style.display = "none";
+  formScreen.style.display = "block";
+};
+
+// Tombol Mulai Sekarang
+document.getElementById("start-btn").onclick = () => {
+  const name = document.getElementById("user-name").value.trim();
+  const absen = document.getElementById("user-absen").value.trim();
+  const kelas = document.getElementById("user-kelas").value.trim();
+
+  if (!name || !absen || !kelas) {
+    alert("Isi semua data!");
     return;
   }
 
-  currentUser = { nama, absen, kelas };
-  quizForm.style.display = "none";
-  quizContainer.style.display = "block";
-  startQuiz();
-});
+  userName = name;
+  userAbsen = absen;
+  userKelas = kelas;
 
-// Mulai kuis
-function startQuiz() {
+  formScreen.style.display = "none";
+  quizScreen.style.display = "block";
+
+  loadQuestions();
+};
+
+// =====================
+// Load Soal
+// =====================
+function loadQuestions() {
   get(ref(db, "questions")).then(snapshot => {
     if (snapshot.exists()) {
-      questions = Object.values(snapshot.val());
-      currentQuestionIndex = 0;
-      score = 0;
+      questions = snapshot.val();
+      selectedAnswers = Array(questions.length).fill(null);
       showQuestion();
+      updateNav();
+      timer = setInterval(updateTimer, 1000);
     } else {
       alert("Belum ada soal di database!");
     }
   });
 }
 
-// Tampilkan soal
-function showQuestion() {
-  if (currentQuestionIndex >= questions.length) {
-    endQuiz();
+// =====================
+// Timer
+// =====================
+function updateTimer() {
+  if (timeLeft <= 0) {
+    clearInterval(timer);
+    showResult();
     return;
   }
+  let m = Math.floor(timeLeft / 60);
+  let s = timeLeft % 60;
+  document.getElementById("timer").textContent =
+    `Waktu: ${m}:${s < 10 ? "0" : ""}${s}`;
+  timeLeft--;
+}
 
-  const q = questions[currentQuestionIndex];
-  questionContainer.innerHTML = `
-    <h3>${q.text}</h3>
-    ${q.options
-      .map(
-        (opt, i) =>
-          `<button class="option-btn" data-index="${i}">${opt}</button>`
-      )
-      .join("")}
-  `;
-
-  // Tambah listener untuk opsi jawaban
-  document.querySelectorAll(".option-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const selected = parseInt(btn.getAttribute("data-index"));
-      if (selected === q.answer) score++;
-      currentQuestionIndex++;
+// =====================
+// Tampilkan Soal
+// =====================
+function showQuestion() {
+  const q = questions[currentQuestion];
+  document.getElementById("question-text").textContent =
+    `${currentQuestion + 1}. ${q.question}`;
+  const choices = document.getElementById("choices");
+  choices.innerHTML = "";
+  q.choices.forEach((c, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = c;
+    if (selectedAnswers[currentQuestion] === i) btn.classList.add("selected");
+    btn.onclick = () => {
+      selectedAnswers[currentQuestion] = i;
       showQuestion();
-    });
+      updateNav();
+    };
+    choices.appendChild(btn);
   });
-
-  // Timer reset
-  resetTimer();
 }
 
-// Timer soal
-function resetTimer() {
-  clearInterval(timer);
-  timeLeft = 30;
-  timerDisplay.textContent = timeLeft;
-  timer = setInterval(() => {
-    timeLeft--;
-    timerDisplay.textContent = timeLeft;
-    if (timeLeft <= 0) {
-      clearInterval(timer);
-      currentQuestionIndex++;
+// =====================
+// Navigasi Soal
+// =====================
+function updateNav() {
+  const nav = document.getElementById("question-nav");
+  nav.innerHTML = "";
+  questions.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = i + 1;
+    btn.className = "question-btn";
+    if (i === currentQuestion) btn.classList.add("active");
+    if (selectedAnswers[i] !== null) btn.classList.add("answered");
+    btn.onclick = () => {
+      currentQuestion = i;
       showQuestion();
+      updateNav();
+    };
+    nav.appendChild(btn);
+  });
+}
+
+// Next
+document.getElementById("next-btn").onclick = () => {
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    showQuestion();
+    updateNav();
+  } else {
+    const unanswered = selectedAnswers
+      .map((a, i) => (a === null ? i + 1 : null))
+      .filter(Boolean);
+    if (unanswered.length > 0) {
+      alert("Belum dijawab: " + unanswered.join(", "));
+      return;
     }
-  }, 1000);
-}
+    clearInterval(timer);
+    showResult();
+  }
+};
 
-// Selesai kuis
-function endQuiz() {
-  clearInterval(timer);
-  questionContainer.innerHTML = `
-    <h2>Kuis selesai!</h2>
-    <p>Skor Anda: ${score} / ${questions.length}</p>
-  `;
-  saveToLeaderboard();
-}
+// Prev
+document.getElementById("prev-btn").onclick = () => {
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    showQuestion();
+    updateNav();
+  }
+};
 
-// Simpan skor ke leaderboard
-function saveToLeaderboard() {
-  if (!currentUser) return;
+// =====================
+// Hasil & Leaderboard
+// =====================
+function showResult() {
+  quizScreen.style.display = "none";
+  resultScreen.style.display = "block";
 
-  const userKey = `${currentUser.nama}_${currentUser.absen}`;
-  const kelasRef = ref(db, `leaderboard/${currentUser.kelas}/${userKey}`);
+  const correct = selectedAnswers.filter(
+    (a, i) => a === questions[i].answer
+  ).length;
+  const wrong = questions.length - correct;
+  const score = Math.round((correct / questions.length) * 100);
 
-  set(kelasRef, {
-    nama: currentUser.nama,
-    absen: currentUser.absen,
+  document.getElementById("correct-count").textContent = correct;
+  document.getElementById("wrong-count").textContent = wrong;
+
+  const scoreText = document.getElementById("score-text");
+  scoreText.textContent = `Nilai: ${score}%`;
+  scoreText.className = score >= 70 ? "green" : score >= 60 ? "yellow" : "red";
+
+  classDisplay.textContent = userKelas;
+
+  const path = `leaderboard/${userKelas}/${userName}`;
+  const entry = {
+    name: userName,
+    absen: userAbsen,
+    kelas: userKelas,
     score: score,
     timestamp: Date.now()
-  }).then(() => {
-    loadLeaderboard(currentUser.kelas);
-  });
+  };
+
+  set(ref(db, path), entry).then(() => loadLeaderboard(userKelas));
 }
 
-// Load leaderboard per kelas
 function loadLeaderboard(kelas) {
-  get(ref(db, `leaderboard/${kelas}`)).then(snapshot => {
-    leaderboardList.innerHTML = "";
-    if (snapshot.exists()) {
-      const data = snapshot.val();
-      const sorted = Object.values(data).sort((a, b) => b.score - a.score);
-      sorted.forEach(item => {
-        const li = document.createElement("li");
-        li.textContent = `${item.nama} (Absen ${item.absen}) - Skor: ${item.score}`;
-        leaderboardList.appendChild(li);
-      });
+  const leaderboardRef = ref(db, `leaderboard/${kelas}`);
+  get(leaderboardRef).then(snapshot => {
+    if (!snapshot.exists()) {
+      leaderboardList.innerHTML = "<li>Belum ada data untuk kelas ini.</li>";
+      return;
     }
+    const latestEntries = {};
+    snapshot.forEach(child => {
+      const data = child.val();
+      const name = data.name;
+      if (!latestEntries[name] || data.timestamp > latestEntries[name].timestamp) {
+        latestEntries[name] = data;
+      }
+    });
+    const sortedEntries = Object.values(latestEntries).sort(
+      (a, b) => b.score - a.score
+    );
+    leaderboardList.innerHTML = "";
+    sortedEntries.forEach((entry, index) => {
+      const li = document.createElement("li");
+      li.textContent =
+        `${index + 1}. ${entry.name} (Absen: ${entry.absen}) - ${entry.score}%`;
+      leaderboardList.appendChild(li);
+    });
   });
 }
