@@ -7,7 +7,14 @@ body {
   text-align: center;
   color: #333;
 }
-
+/* supaya kontainer editor bisa di-scroll */
+#editor-container {
+  max-height: 70vh;  /* tinggi maksimal 70% layar */
+  overflow-y: auto;  /* aktifkan scroll vertikal */
+  padding: 10px;
+  border: 1px solid #ccc; /* opsional, biar jelas area editor */
+  background: #fafafa;    /* opsional */
+}
 h1, h2, h3 {
   margin: 10px 0;
 }
@@ -170,3 +177,4 @@ input {
   padding: 6px 10px;
   font-size: 12px;
 }
+
