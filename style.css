@@ -110,10 +110,18 @@ input {
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s ease-in-out;
+  color: black;
 }
 
 .choice-btn:hover {
   background: #e8e8e8;
+}
+
+/* highlight pilihan terpilih */
+.choice-btn.selected {
+  background: #4CAF50 !important;
+  color: white !important;
+  font-weight: bold;
 }
 
 /* ====== LEADERBOARD ====== */
