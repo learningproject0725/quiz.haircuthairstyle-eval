@@ -1,5 +1,15 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+// ==================== Firebase Init ====================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  get,
+  set,
+  push,
+  child,
+  update,
+  remove
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -14,138 +24,93 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// ======================= ADMIN LOGIN =======================
-const adminBtn = document.getElementById("admin-btn");
-const adminLogin = document.getElementById("admin-login");
-const adminEditor = document.getElementById("admin-editor");
-const loginBtn = document.getElementById("login-btn");
 
-adminBtn.addEventListener("click", () => {
-  adminLogin.style.display = "flex";
-});
-
-loginBtn.addEventListener("click", () => {
-  const pass = document.getElementById("admin-password").value;
-  if (pass === "12345") {
-    adminLogin.style.display = "none";
-    adminEditor.style.display = "flex";
-    loadQuestionsToEditor();
-  } else {
-    alert("Password salah!");
-  }
-});
-
-// ======================= QUIZ VARIABEL =======================
+// ==================== Global Variables ====================
 let questions = [];
 let currentQuestion = 0;
 let answers = {};
 let timer;
 
-// ambil soal dari firebase
+// ==================== DOM Elements ====================
+const userForm = document.getElementById("user-form");
+const quizScreen = document.getElementById("quiz-screen");
+const resultScreen = document.getElementById("result-screen");
+const adminLogin = document.getElementById("admin-login");
+const adminPanel = document.getElementById("admin-panel");
+const leaderboardTable = document.querySelector("#leaderboard tbody");
+const questionContainer = document.getElementById("question-container");
+const navButtons = document.getElementById("nav-buttons");
+
+// ==================== Quiz Functions ====================
 async function loadQuestions() {
   const snapshot = await get(child(ref(db), "questions"));
   if (snapshot.exists()) {
     questions = Object.values(snapshot.val());
-    renderQuestion();
-    renderNavButtons();
   } else {
-    alert("Belum ada soal di database.");
+    questions = [];
   }
 }
 
-// ======================= RENDER QUIZ =======================
 function renderQuestion() {
+  if (!questions[currentQuestion]) return;
+
   const q = questions[currentQuestion];
-  if (!q) return;
-  document.getElementById("question-text").innerText = q.text;
+  questionContainer.innerHTML = `
+    <h3>${currentQuestion + 1}. ${q.question}</h3>
+    ${q.options
+      .map(
+        (opt, i) => `
+        <button class="option-btn ${
+          answers[currentQuestion] === i ? "selected" : ""
+        }" onclick="selectOption(${i})">${opt}</button>
+      `
+      )
+      .join("")}
+  `;
 
-  const choicesDiv = document.getElementById("choices");
-  choicesDiv.innerHTML = "";
-  q.choices.forEach((choice, i) => {
-    const btn = document.createElement("button");
-    btn.classList.add("choice-btn");
-    btn.innerText = choice;
-
-    // beri class selected kalau jawaban dipilih
-    if (answers[currentQuestion] === i) {
-      btn.classList.add("selected");
-    }
-
-    btn.addEventListener("click", () => {
-      answers[currentQuestion] = i;
-      renderQuestion();
-      updateNavButtons();
-    });
-
-    choicesDiv.appendChild(btn);
-  });
+  renderNavButtons();
 }
 
 function renderNavButtons() {
-  const nav = document.getElementById("question-nav");
-  nav.innerHTML = "";
-  questions.forEach((_, i) => {
-    const btn = document.createElement("button");
-    btn.innerText = i + 1;
-    btn.addEventListener("click", () => {
-      currentQuestion = i;
-      renderQuestion();
-      updateNavButtons();
-    });
-    nav.appendChild(btn);
-  });
-  updateNavButtons();
-}
+  navButtons.innerHTML = "";
 
-function updateNavButtons() {
-  document.querySelectorAll("#question-nav button").forEach((btn, i) => {
-    btn.classList.remove("active");
-    if (i === currentQuestion) btn.classList.add("active");
-    if (answers[i] !== undefined) btn.style.background = "#4CAF50";
-  });
-}
-
-// ======================= QUIZ FLOW =======================
-document.getElementById("open-form-btn").onclick = () => {
-  document.getElementById("start-screen").style.display = "none";
-  document.getElementById("user-form").style.display = "block";
-};
-
-document.getElementById("start-btn").onclick = () => {
-  document.getElementById("user-form").style.display = "none";
-  document.getElementById("quiz-screen").style.display = "block";
-  startTimer(20 * 60);
-  loadQuestions();
-};
-
-document.getElementById("next-btn").onclick = () => {
-  if (currentQuestion < questions.length - 1) {
-    currentQuestion++;
-    renderQuestion();
-    updateNavButtons();
-  } else {
-    finishQuiz(); // kalau soal terakhir → akhiri quiz
-  }
-};
-
-document.getElementById("prev-btn").onclick = () => {
   if (currentQuestion > 0) {
-    currentQuestion--;
-    renderQuestion();
-    updateNavButtons();
+    const prevBtn = document.createElement("button");
+    prevBtn.textContent = "Kembali";
+    prevBtn.onclick = () => {
+      currentQuestion--;
+      renderQuestion();
+    };
+    navButtons.appendChild(prevBtn);
   }
+
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent =
+    currentQuestion < questions.length - 1 ? "Lanjut" : "Selesai";
+  nextBtn.onclick = () => {
+    if (currentQuestion < questions.length - 1) {
+      currentQuestion++;
+      renderQuestion();
+    } else {
+      finishQuiz();
+    }
+  };
+  navButtons.appendChild(nextBtn);
+}
+
+window.selectOption = (i) => {
+  answers[currentQuestion] = i;
+  renderQuestion();
 };
 
-// ======================= TIMER =======================
 function startTimer(duration) {
   let time = duration;
-  const timerDisplay = document.getElementById("timer");
   timer = setInterval(() => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    timerDisplay.innerText = `Waktu: ${minutes}:${seconds
-      .toString()
-      .padStart(2, "0")}`;
+    let minutes = Math.floor(time / 60);
+    let seconds = time % 60;
+    document.getElementById(
+      "timer"
+    ).textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
     if (--time < 0) {
       clearInterval(timer);
       finishQuiz();
@@ -153,102 +118,157 @@ function startTimer(duration) {
   }, 1000);
 }
 
-// ======================= FINISH =======================
 function finishQuiz() {
-  document.getElementById("quiz-screen").style.display = "none";
-  document.getElementById("result-screen").style.display = "block";
+  clearInterval(timer);
 
-  let benar = 0;
-  let salah = 0;
+  let score = 0;
   questions.forEach((q, i) => {
-    if (answers[i] === q.answer) benar++;
-    else salah++;
+    if (answers[i] === q.answer) score++;
   });
 
-  document.getElementById("correct-count").innerText = benar;
-  document.getElementById("wrong-count").innerText = salah;
-  const score = Math.round((benar / questions.length) * 100);
-  document.getElementById("score-text").innerText = `Skor: ${score}`;
+  let percent = ((score / questions.length) * 100).toFixed(2);
 
-  // simpan ke leaderboard
-  const nama = document.getElementById("user-name").value;
-  const absen = document.getElementById("user-absen").value;
-  const kelas = document.getElementById("user-kelas").value;
-  update(ref(db, `leaderboard/${kelas}/${nama}`), {
+  quizScreen.style.display = "none";
+  resultScreen.style.display = "block";
+
+  document.getElementById("score").textContent = `Skor Anda: ${score} / ${
+    questions.length
+  } (${percent}%)`;
+
+  saveLeaderboard(score, percent);
+}
+
+// ==================== Leaderboard ====================
+async function saveLeaderboard(score, percent) {
+  const nama = document.getElementById("nama").value;
+  const absen = document.getElementById("absen").value;
+  const kelas = document.getElementById("kelas").value;
+
+  const userRef = ref(db, `leaderboard/${kelas}/${nama}_${absen}`);
+  await set(userRef, {
+    nama,
     absen,
+    kelas,
     score,
+    percent,
     timestamp: Date.now()
   });
 
-  // tampilkan leaderboard
-  get(child(ref(db), `leaderboard/${kelas}`)).then((snapshot) => {
-    if (snapshot.exists()) {
-      const data = Object.entries(snapshot.val());
-      data.sort((a, b) => b[1].score - a[1].score);
-      const list = document.getElementById("leaderboard-list");
-      list.innerHTML = "";
-      data.forEach(([nama, info]) => {
-        const li = document.createElement("li");
-        li.innerText = `${nama} (Absen ${info.absen}) - Skor ${info.score}`;
-        list.appendChild(li);
+  loadLeaderboard(kelas);
+}
+
+async function loadLeaderboard(kelas) {
+  const snapshot = await get(child(ref(db), `leaderboard/${kelas}`));
+  leaderboardTable.innerHTML = "";
+
+  if (snapshot.exists()) {
+    const data = Object.values(snapshot.val());
+    data
+      .sort((a, b) => b.score - a.score)
+      .forEach((row, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${row.nama}</td>
+          <td>${row.absen}</td>
+          <td>${row.kelas}</td>
+          <td>${row.score}</td>
+          <td>${row.percent}%</td>
+        `;
+        leaderboardTable.appendChild(tr);
       });
-      document.getElementById("class-display").innerText = kelas;
-    }
-  });
+  }
 }
 
-// ======================= ADMIN EDITOR =======================
-function loadQuestionsToEditor() {
-  get(child(ref(db), "questions")).then((snapshot) => {
-    if (snapshot.exists()) {
-      const data = snapshot.val();
-      const container = document.getElementById("editor-container");
-      container.innerHTML = "";
-      Object.entries(data).forEach(([id, q]) => {
-        addQuestionEditor(container, id, q);
-      });
-    }
-  });
-}
-
-function addQuestionEditor(container, id, q = null) {
-  const div = document.createElement("div");
-  div.classList.add("editor-question");
-  div.innerHTML = `
-    <input type="text" class="q-text" placeholder="Pertanyaan" value="${
-      q ? q.text : ""
-    }">
-    <textarea class="q-choices" placeholder="Pilihan (pisahkan dengan koma)">${
-      q ? q.choices.join(",") : ""
-    }</textarea>
-    <input type="number" class="q-answer" placeholder="Index jawaban benar (0-3)" value="${
-      q ? q.answer : ""
-    }">
-    <button class="delete-btn">Hapus</button>
-  `;
-  div.querySelector(".delete-btn").onclick = () => div.remove();
-  container.appendChild(div);
-}
-
-document.getElementById("add-question-btn").onclick = () => {
-  addQuestionEditor(document.getElementById("editor-container"), Date.now());
+// ==================== Admin ====================
+document.getElementById("admin-btn").onclick = () => {
+  adminLogin.style.display = "block";
 };
 
-document.getElementById("save-questions-btn").onclick = () => {
-  const container = document.getElementById("editor-container");
-  const qDivs = container.querySelectorAll(".editor-question");
-  let newQuestions = {};
-  qDivs.forEach((div, idx) => {
-    const text = div.querySelector(".q-text").value;
-    const choices = div
-      .querySelector(".q-choices")
-      .value.split(",")
-      .map((c) => c.trim());
-    const answer = parseInt(div.querySelector(".q-answer").value);
-    newQuestions[idx] = { text, choices, answer };
+document.getElementById("login-admin-btn").onclick = () => {
+  const pass = document.getElementById("admin-pass").value;
+  if (pass === "12345") {
+    adminLogin.style.display = "none";
+    adminPanel.style.display = "block";
+    loadQuestionsAdmin();
+  } else {
+    alert("Password salah!");
+  }
+};
+
+async function loadQuestionsAdmin() {
+  const snapshot = await get(child(ref(db), "questions"));
+  const container = document.getElementById("admin-questions");
+  container.innerHTML = "";
+
+  if (snapshot.exists()) {
+    const data = Object.entries(snapshot.val());
+    data.forEach(([key, q], idx) => {
+      const div = document.createElement("div");
+      div.className = "admin-question";
+      div.innerHTML = `
+        <h4>Soal ${idx + 1}</h4>
+        <input type="text" value="${q.question}" id="q-${key}" />
+        ${q.options
+          .map(
+            (opt, i) =>
+              `<input type="text" value="${opt}" id="q-${key}-opt${i}" />`
+          )
+          .join("")}
+        <input type="number" value="${q.answer}" id="q-${key}-ans" />
+        <button onclick="updateQuestion('${key}')">Update</button>
+        <button onclick="deleteQuestion('${key}')">Hapus</button>
+      `;
+      container.appendChild(div);
+    });
+  }
+}
+
+window.updateQuestion = async (key) => {
+  const q = document.getElementById(`q-${key}`).value;
+  const opts = [];
+  for (let i = 0; i < 4; i++) {
+    opts.push(document.getElementById(`q-${key}-opt${i}`).value);
+  }
+  const ans = parseInt(document.getElementById(`q-${key}-ans`).value);
+  await update(ref(db, `questions/${key}`), {
+    question: q,
+    options: opts,
+    answer: ans
   });
-  set(ref(db, "questions"), newQuestions).then(() => {
-    alert("Soal tersimpan!");
-    loadQuestions();
+  loadQuestionsAdmin();
+};
+
+window.deleteQuestion = async (key) => {
+  await remove(ref(db, `questions/${key}`));
+  loadQuestionsAdmin();
+};
+
+document.getElementById("add-question-btn").onclick = async () => {
+  const newRef = push(ref(db, "questions"));
+  await set(newRef, {
+    question: "Tulis pertanyaan di sini",
+    options: ["Opsi 1", "Opsi 2", "Opsi 3", "Opsi 4"],
+    answer: 0
   });
+  loadQuestionsAdmin();
+};
+
+// ==================== User Start Quiz ====================
+document.getElementById("start-btn").onclick = async () => {
+  await loadQuestions();
+
+  if (questions.length === 0) {
+    alert("Belum ada soal di database.");
+    return;
+  }
+
+  currentQuestion = 0;
+  answers = {};
+
+  userForm.style.display = "none";
+  quizScreen.style.display = "block";
+
+  renderQuestion();
+  startTimer(20 * 60);
 };
