@@ -65,12 +65,18 @@ function renderQuestion() {
     const btn = document.createElement("button");
     btn.classList.add("choice-btn");
     btn.innerText = choice;
-    if (answers[currentQuestion] === i) btn.style.background = "#4CAF50";
+
+    // beri class selected kalau jawaban dipilih
+    if (answers[currentQuestion] === i) {
+      btn.classList.add("selected");
+    }
+
     btn.addEventListener("click", () => {
       answers[currentQuestion] = i;
       renderQuestion();
       updateNavButtons();
     });
+
     choicesDiv.appendChild(btn);
   });
 }
@@ -117,6 +123,8 @@ document.getElementById("next-btn").onclick = () => {
     currentQuestion++;
     renderQuestion();
     updateNavButtons();
+  } else {
+    finishQuiz(); // kalau soal terakhir → akhiri quiz
   }
 };
 
@@ -244,4 +252,3 @@ document.getElementById("save-questions-btn").onclick = () => {
     loadQuestions();
   });
 };
-
