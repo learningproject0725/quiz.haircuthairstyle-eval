@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const newKey = Date.now().toString();
       await set(ref(db, `questions/${newKey}`), {
         text: "Soal baru — edit di sini",
-        choices: ["Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D"],
+        choices: ["Pilihan A (0)", "Pilihan B (1)", "Pilihan C (2)", "Pilihan D (3)"],
         answer: 0,
         createdAt: Date.now()
       });
@@ -497,3 +497,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // end DOMContentLoaded
 });
+
