@@ -77,20 +77,35 @@ input {
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 #question-nav button {
   background: #ddd;
   color: black;
   font-size: 12px;
-  padding: 5px 10px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  min-width: 30px;
+  transition: background 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+#question-nav button:hover {
+  background: #b3e5fc;
 }
 
 #question-nav button.active {
-  background: #4CAF50;
+  background: #2196f3;
   color: white;
+  transform: scale(1.05);
 }
 
+#question-nav button.answered {
+  background: #4CAF50 !important;
+  color: white !important;
+}
+
+/* ====== QUESTION BOX ====== */
 #question-box {
   margin-top: 20px;
 }
@@ -181,4 +196,20 @@ input {
   background: #e74c3c;
   padding: 6px 10px;
   font-size: 12px;
+}
+
+/* ====== EXPORT BUTTON ====== */
+#export-excel-btn {
+  background: #1976d2;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+#export-excel-btn:hover {
+  background: #1565c0;
 }
