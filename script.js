@@ -24,16 +24,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreText = document.getElementById("score-text");
   const leaderboardTable = document.getElementById("leaderboard-table");
 
-  // Firebase setup
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    databaseURL: "YOUR_DB_URL",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MSG_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
+// -------------------- FIREBASE CONFIG --------------------
+const firebaseConfig = {
+  apiKey: "AIzaSyA0jJq5ITmMSIDzc3jH0PRyRG6lWh7Np_4",
+  authDomain: "quizhairstyle.firebaseapp.com",
+  databaseURL: "https://quiz-evaluasi-hairstyle-default-rtdb.firebaseio.com/",
+  projectId: "quizhairstyle",
+  storageBucket: "quizhairstyle.appspot.com",
+  messagingSenderId: "889778092393",
+  appId: "1:889778092393:web:831b46773c2aa593d0e5f8",
+};
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
@@ -282,3 +282,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
